@@ -2,7 +2,7 @@
 #include "qsort.tab.h"
 %}
 %%
-[S] return S;
+[S] return SB;
 [L] return L;
 [X] return X;
 [R] return R;
@@ -11,7 +11,7 @@
 [T] return T;
 [K] return K;
 [S][K] return SK;
-[S][G] return SGM;
+[S][G] return SG;
 \- return bindestrich;
 \: return doppelpunkt;
 \= return gleich;
@@ -29,3 +29,7 @@
 \. return punkt;
 \| return oder;
 \n return aus;
+
+
+
+

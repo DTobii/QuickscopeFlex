@@ -17,6 +17,13 @@ S:  aus {
 printf("= erkannt");
 
 }
+| conc klammerauf eklammerauf EB klammerzu komma L komma L klammerzu punkt
+| conc klammerauf eklammerauf X oder R eklammerzu komma L komma eklammerauf X oder T eklammerzu klammerzu doppelpunkt bindestrich conc klammerauf R komma L komma T klammerzu punkt
+| split klammerauf eklammerauf eklammerzu komma EB komma eklammerauf eklammerzu komma eklammerauf eklammerzu klammerzu punkt
+| split klammerauf eklammerauf X oder R eklammerzu komma EB komma eklammerauf X oder K komma G klammerzu doppelpunkt bindestrich X kleiner EB komma split klammerauf R komma EB komma K komma G klammerzu punkt
+| split klammerauf eklammerauf X oder R eklammerzu komma EB oder K oder eklammerauf X oder G eklammerzu klammerzu doppelpunkt bindestrich X groessergleich EB komma split klammerauf R komma EB komma K komma G klammerzu punkt
+| qsort klammerauf eklammerauf eklammerzu komma eklammerauf eklammerzu klammerzu punkt
+| qsort klammerauf eklammerauf EB oder R eklammerzu komma S klammerzu doppelpunkt bindestrich split klammerauf R komma EB komma K komma G klammerzu komma qsort klammerauf K komma SK klammerzu komma qsort klammerauf G komma SG klammerzu komma conc klammerauf SK komma eklammerauf EB oder SG eklammerzu komma S klammerzu punkt
 | conc { printf("test");}
 
 %%
