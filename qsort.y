@@ -29,7 +29,7 @@ printf("erkannt");
 | Z 
 | S Z | S aus {printf("erkannt");}
 
-Z: term klammerauf A klammerzu C { printf("%s",$1);}
+Z: term klammerauf A klammerzu C 
    
 A: leereliste B | pipeliste B | variable B 
 B: komma A | 
