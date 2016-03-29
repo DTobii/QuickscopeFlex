@@ -2,7 +2,7 @@
 
 bison qsort.y -d
 flex qsort.l
-gcc -o qsort qsort.tab.c lex.yy.c -lfl 2>/dev/null
+gcc -o qsort qsort.tab.c lex.yy.c -lfl 
 rm lex.yy.c qsort.tab.c qsort.tab.h
 
 echo "Testing Input 1 of 7" $(printf "conc([],L,L).\n\n" | ./qsort)
