@@ -1,0 +1,6 @@
+qsort
+lex.yy.c
+qsort.tab.c
+qsort.tab.h
+y.output
+y.tab.c
