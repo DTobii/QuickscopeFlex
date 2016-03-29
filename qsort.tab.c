@@ -442,8 +442,8 @@ static const yytype_uint8 yytranslate[] =
 static const yytype_uint8 yyrline[] =
 {
        0,    17,    17,    20,    21,    21,    23,    25,    25,    25,
-      26,    26,    27,    27,    28,    28,    29,    29,    30,    32,
-      33,    33
+      26,    26,    27,    27,    28,    28,    29,    29,    30,    31,
+      32,    32
 };
 #endif
 
@@ -1476,7 +1476,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 35 "qsort.y" /* yacc.c:1906  */
+#line 34 "qsort.y" /* yacc.c:1906  */
 
 
 int main(int argc, char **argv){

@@ -28,7 +28,6 @@ C: punkt aus | doppelpunkt bindestrich D aus
 D: G | variable E
 E: kleiner variable F | groessergleich variable F
 F: komma Z 
-
 G: term klammerauf A klammerzu H
 H: punkt aus | komma G  
 
