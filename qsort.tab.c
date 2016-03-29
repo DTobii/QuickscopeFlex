@@ -128,7 +128,15 @@ extern int yydebug;
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
-typedef int YYSTYPE;
+typedef union YYSTYPE YYSTYPE;
+union YYSTYPE
+{
+#line 9 "qsort.y" /* yacc.c:355  */
+
+char* character;
+
+#line 139 "qsort.tab.c" /* yacc.c:355  */
+};
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1
 #endif
@@ -142,7 +150,7 @@ int yyparse (void);
 
 /* Copy the second part of user declarations.  */
 
-#line 146 "qsort.tab.c" /* yacc.c:358  */
+#line 154 "qsort.tab.c" /* yacc.c:358  */
 
 #ifdef short
 # undef short
@@ -441,9 +449,9 @@ static const yytype_uint8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    17,    17,    20,    21,    21,    23,    25,    25,    25,
-      26,    26,    27,    27,    28,    28,    29,    29,    30,    31,
-      32,    32
+       0,    26,    26,    29,    30,    30,    32,    34,    34,    34,
+      35,    35,    36,    36,    37,    37,    38,    38,    39,    40,
+      41,    41
 };
 #endif
 
@@ -1240,15 +1248,27 @@ yyreduce:
   switch (yyn)
     {
         case 2:
-#line 17 "qsort.y" /* yacc.c:1646  */
+#line 26 "qsort.y" /* yacc.c:1646  */
     {
 printf("erkannt");
 }
-#line 1248 "qsort.tab.c" /* yacc.c:1646  */
+#line 1256 "qsort.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 5:
+#line 30 "qsort.y" /* yacc.c:1646  */
+    {printf("erkannt");}
+#line 1262 "qsort.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 6:
+#line 32 "qsort.y" /* yacc.c:1646  */
+    { printf("%s",(yyvsp[-4].character));}
+#line 1268 "qsort.tab.c" /* yacc.c:1646  */
     break;
 
 
-#line 1252 "qsort.tab.c" /* yacc.c:1646  */
+#line 1272 "qsort.tab.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -1476,7 +1496,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 34 "qsort.y" /* yacc.c:1906  */
+#line 43 "qsort.y" /* yacc.c:1906  */
 
 
 int main(int argc, char **argv){

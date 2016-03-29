@@ -824,36 +824,44 @@ return aus;
 case 15:
 YY_RULE_SETUP
 #line 19 "qsort.l"
-return leereliste;
+{sscanf(yytext,"%s",yylval.character);
+                return leereliste;
+                }
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 20 "qsort.l"
-return variable;
+#line 23 "qsort.l"
+{sscanf(yytext,"%s",yylval.character);
+                return variable;
+                }
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 21 "qsort.l"
-{sscanf(yytext,"%s",&yylval.character);
+#line 27 "qsort.l"
+{sscanf(yytext,"%s",yylval.character);
                 return term;
                 }
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 24 "qsort.l"
-return pipeliste;
+#line 30 "qsort.l"
+{sscanf(yytext,"%s",yylval.character);
+                return pipeliste;
+                }
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 25 "qsort.l"
-return kommaliste;
+#line 34 "qsort.l"
+{sscanf(yytext,"%s",yylval.character);
+                return kommaliste;
+                }
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 30 "qsort.l"
+#line 42 "qsort.l"
 ECHO;
 	YY_BREAK
-#line 857 "lex.yy.c"
+#line 865 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -1848,4 +1856,4 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 29 "qsort.l"
+#line 41 "qsort.l"

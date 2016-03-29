@@ -16,13 +16,25 @@
 \. return punkt;
 \| return oder;
 \n return aus;
-\[\] return leereliste;
-[A-Z][a-zA-Z0-9]* return variable;
-[a-z][a-zA-Z0-9]* {sscanf(yytext,"%s",&yylval.character);
+\[\] {sscanf(yytext,"%s",yylval.character);
+                return leereliste;
+                }
+
+[A-Z][a-zA-Z0-9]* {sscanf(yytext,"%s",yylval.character);
+                return variable;
+                }
+
+[a-z][a-zA-Z0-9]* {sscanf(yytext,"%s",yylval.character);
                 return term;
                 }
-\[[A-Z][a-zA-Z0-9]*\|[A-Z][a-zA-Z0-9]*\] return pipeliste;
-\[[A-Z][a-zA-Z0-9]*(\,[A-Z][A-Za-z0-9]*)*\] return kommaliste;
+\[[A-Z][a-zA-Z0-9]*\|[A-Z][a-zA-Z0-9]*\] {sscanf(yytext,"%s",yylval.character);
+                return pipeliste;
+                }
+
+\[[A-Z][a-zA-Z0-9]*(\,[A-Z][A-Za-z0-9]*)*\] {sscanf(yytext,"%s",yylval.character);
+                return kommaliste;
+                }
+
 
 
 
