@@ -4,13 +4,20 @@
 %%
 \- return bindestrich;
 \: return doppelpunkt;
-\= return gleich;
-\> return groesser;
+\= {sscanf(yytext,"%s",yylval.character);
+                return gleich;
+                };
+\> {sscanf(yytext,"%s",yylval.character);
+                return groesser;
+                };
 \< {sscanf(yytext,"%s",yylval.character);
                 return kleiner;
                 };
 \>= {sscanf(yytext,"%s",yylval.character);
                 return groessergleich;
+                };
+\<= {sscanf(yytext,"%s",yylval.character);
+                return kleinergleich;
                 };
 \( return klammerauf;
 \) return klammerzu;

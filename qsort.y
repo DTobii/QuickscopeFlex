@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
+#include <stdlib.h>
 void yyerror(char *message);
 
   	typedef struct s_variablenlist
@@ -21,6 +22,38 @@ void yyerror(char *message);
 
         termlist *momtermlist;
 
+void addVariable(char* vari) {
+	strcpy(momtermlist->varlist->variable,vari);
+	momtermlist->varlist->danach = (variablenlist*)malloc(sizeof(variablenlist));
+	momtermlist->varlist->danach->davor = momtermlist->varlist;
+	momtermlist->varlist = momtermlist->varlist->danach;
+}
+
+void nextTerm() {
+	momtermlist->danach = (termlist*)malloc(sizeof(termlist));
+	momtermlist->danach->davor = momtermlist;
+	momtermlist = momtermlist->danach;
+	momtermlist->varlist = (variablenlist*)malloc(sizeof(variablenlist));
+	momtermlist->varlist->davor=0;
+}
+
+void setTerm(char* term) {
+	strcpy(momtermlist->term,term);
+}
+
+void ausgabe() {
+	while(momtermlist !=0 )  
+    {
+		while(momtermlist->varlist != 0)
+        {
+            printf("%s",momtermlist->varlist->variable);
+			momtermlist->varlist=momtermlist->varlist->davor;
+        }
+		printf("%s",momtermlist->term);
+		momtermlist=momtermlist->davor;
+	}
+}
+
 %}
 
 %start S
@@ -30,7 +63,7 @@ char character[100];
 }
 
 %token aus
-%token bindestrich doppelpunkt gleich groesser kleiner groessergleich
+%token bindestrich doppelpunkt gleich groesser kleiner groessergleich kleinergleich
 %token klammerauf klammerzu eklammerauf eklammerzu
 %token komma punkt oder 
 %token leereliste variable term pipeliste kommaliste parameter
@@ -40,8 +73,11 @@ char character[100];
 %type <character> pipeliste;
 %type <character> kommaliste;
 %type <character> leereliste;
+%type <character> gleich;
 %type <character> kleiner;
 %type <character> groessergleich;
+%type <character> groesser;
+%type <character> kleinergleich;
 
 %%
 S:  aus {
@@ -51,122 +87,50 @@ S:  aus {
 | S Z | S aus {
 }
 
-Z: term {
-	strcpy(momtermlist->term,$1);
-	momtermlist->danach = (termlist*)malloc(sizeof(termlist));
-	momtermlist->danach->davor = momtermlist;
-	momtermlist = momtermlist->danach;
-	momtermlist->varlist = (variablenlist*)malloc(sizeof(variablenlist));
-	momtermlist->varlist->davor=0;
-} klammerauf A klammerzu C
+Z: term { setTerm($1);} klammerauf A klammerzu C
    
-A: leereliste 
-{	
-	strcpy(momtermlist->varlist->variable,$1);
-	momtermlist->varlist->danach = (variablenlist*)malloc(sizeof(variablenlist));
-	momtermlist->varlist->danach->davor = momtermlist->varlist;
-	momtermlist->varlist = momtermlist->varlist->danach;
-} B | pipeliste 
-{
-	strcpy(momtermlist->varlist->variable,$1);
-	momtermlist->varlist->danach = (variablenlist*)malloc(sizeof(variablenlist));
-	momtermlist->varlist->danach->davor = momtermlist->varlist;
-	momtermlist->varlist = momtermlist->varlist->danach;
-}
-B | variable 
-{
-	strcpy(momtermlist->varlist->variable,$1);
-	momtermlist->varlist->danach = (variablenlist*)malloc(sizeof(variablenlist));
-	momtermlist->varlist->danach->davor = momtermlist->varlist;
-	momtermlist->varlist = momtermlist->varlist->danach;
-}
-B 
+A: leereliste {	addVariable($1);} B 
+| pipeliste { addVariable($1);} B
+| variable { addVariable($1);} B 
 
 B: komma A | 
-C: punkt aus 
-{
-	while(momtermlist->davor !=0 )  
-       	{
-		while(momtermlist->varlist->davor != 0)
-        	{
-                        momtermlist->varlist=momtermlist->varlist->davor;
-                        printf("%s",momtermlist->varlist->variable);
-                }
-        momtermlist= momtermlist->davor;
-	printf("%s",momtermlist->term);
-	}
-}
- | doppelpunkt bindestrich D aus 
-{
-	while(momtermlist->davor!= 0)
-       	{
-		while(momtermlist->varlist->davor != 0)
-                {
-                        momtermlist->varlist=momtermlist->varlist->davor;
-                        printf("%s",momtermlist->varlist->variable);
-                } 
-	        momtermlist= momtermlist->davor;
-        	printf("%s",momtermlist->term);
-        }
-}
-D: G | variable
-{
-	momtermlist->danach = (termlist*)malloc(sizeof(termlist));
-	momtermlist->danach->davor = momtermlist;
-	momtermlist = momtermlist->danach;
-	momtermlist->varlist = (variablenlist*)malloc(sizeof(variablenlist));
-    momtermlist->varlist->davor=0;
-	strcpy(momtermlist->varlist->variable,$1);
-	momtermlist->varlist->danach = (variablenlist*)malloc(sizeof(variablenlist));
-	momtermlist->varlist->danach->davor = momtermlist->varlist;
-	momtermlist->varlist = momtermlist->varlist->danach;
+
+C: punkt aus { ausgabe();}
+| doppelpunkt bindestrich D aus { ausgabe();}
+
+D: G | variable {
+	nextTerm();
+	addVariable($1);
 } E
+
 E: kleiner variable 
-{	strcpy(momtermlist->davor->term,$1); 
-	strcpy(momtermlist->varlist->variable,$2);
-	momtermlist->varlist->danach = (variablenlist*)malloc(sizeof(variablenlist));
-	momtermlist->varlist->danach->davor = momtermlist->varlist;
-	momtermlist->varlist = momtermlist->varlist->danach;
+{	
+	setTerm($1);
+	addVariable($2);
 	
 } F | groessergleich variable 
-{	strcpy(momtermlist->davor->term,$1); 
-	strcpy(momtermlist->varlist->variable,$2);
-	momtermlist->varlist->danach = (variablenlist*)malloc(sizeof(variablenlist));
-	momtermlist->varlist->danach->davor = momtermlist->varlist;
-	momtermlist->varlist = momtermlist->varlist->danach;
+{	
+	setTerm($1); 
+	addVariable($2);
 	
 } F
-F: komma Z 
+F: komma {nextTerm();} Z 
 G: term 
 {
-	strcpy(momtermlist->term,$1); 
-	momtermlist->danach = (termlist*)malloc(sizeof(termlist));
-	momtermlist->danach->davor = momtermlist;
-	momtermlist = momtermlist->danach;
-	momtermlist->varlist = (variablenlist*)malloc(sizeof(variablenlist));
-    momtermlist->varlist->davor=0;
+	nextTerm();
+	setTerm($1);
 } klammerauf A klammerzu H
 
-H: punkt aus
-{
-	while(momtermlist->davor!= 0)  
-      	{
-		while(momtermlist->varlist->davor != 0)
-	        {
-		        momtermlist->varlist=momtermlist->varlist->davor;
-	                printf("%s",momtermlist->varlist->variable);
-	        } 
-        momtermlist= momtermlist->davor;
-       	printf("%s",momtermlist->term);
-	}
-}
- | komma G  
+H: punkt aus { ausgabe();}
+| komma G
 
 %%
 
 int main(int argc, char **argv){
 	momtermlist = (termlist*)malloc(sizeof(termlist));
-	momtermlist->davor=0;	
+	momtermlist->davor=0;
+	momtermlist->varlist = (variablenlist*)malloc(sizeof(variablenlist));
+	momtermlist->varlist->davor=0;
 	yyparse();
 	return 0;
 }
