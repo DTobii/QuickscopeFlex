@@ -40,6 +40,8 @@ char character[100];
 %type <character> pipeliste;
 %type <character> kommaliste;
 %type <character> leereliste;
+%type <character> kleiner;
+%type <character> groessergleich;
 
 %%
 S:  aus {
@@ -107,8 +109,33 @@ C: punkt aus
         	printf("%s",momtermlist->term);
         }
 }
-D: G | variable E
-E: kleiner variable F | groessergleich variable F
+D: G | variable
+{
+	momtermlist->danach = (termlist*)malloc(sizeof(termlist));
+	momtermlist->danach->davor = momtermlist;
+	momtermlist = momtermlist->danach;
+	momtermlist->varlist = (variablenlist*)malloc(sizeof(variablenlist));
+    momtermlist->varlist->davor=0;
+	strcpy(momtermlist->varlist->variable,$1);
+	momtermlist->varlist->danach = (variablenlist*)malloc(sizeof(variablenlist));
+	momtermlist->varlist->danach->davor = momtermlist->varlist;
+	momtermlist->varlist = momtermlist->varlist->danach;
+} E
+E: kleiner variable 
+{	strcpy(momtermlist->davor->term,$1); 
+	strcpy(momtermlist->varlist->variable,$2);
+	momtermlist->varlist->danach = (variablenlist*)malloc(sizeof(variablenlist));
+	momtermlist->varlist->danach->davor = momtermlist->varlist;
+	momtermlist->varlist = momtermlist->varlist->danach;
+	
+} F | groessergleich variable 
+{	strcpy(momtermlist->davor->term,$1); 
+	strcpy(momtermlist->varlist->variable,$2);
+	momtermlist->varlist->danach = (variablenlist*)malloc(sizeof(variablenlist));
+	momtermlist->varlist->danach->davor = momtermlist->varlist;
+	momtermlist->varlist = momtermlist->varlist->danach;
+	
+} F
 F: komma Z 
 G: term 
 {
@@ -117,7 +144,7 @@ G: term
 	momtermlist->danach->davor = momtermlist;
 	momtermlist = momtermlist->danach;
 	momtermlist->varlist = (variablenlist*)malloc(sizeof(variablenlist));
-        momtermlist->varlist->davor=0;
+    momtermlist->varlist->davor=0;
 } klammerauf A klammerzu H
 
 H: punkt aus

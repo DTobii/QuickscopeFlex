@@ -6,8 +6,12 @@
 \: return doppelpunkt;
 \= return gleich;
 \> return groesser;
-\< return kleiner;
-\>= return groessergleich;
+\< {sscanf(yytext,"%s",yylval.character);
+                return kleiner;
+                };
+\>= {sscanf(yytext,"%s",yylval.character);
+                return groessergleich;
+                };
 \( return klammerauf;
 \) return klammerzu;
 \{ return eklammerauf;
