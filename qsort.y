@@ -6,7 +6,15 @@
 #include <stdbool.h>
 void yyerror(char *message);
 
-  	typedef struct s_variablenlist
+  	
+	typedef struct s_testlist
+		{
+				char variable[20];
+				struct s_testlist *davor;
+				struct s_testlist *danach;
+		}testlist;
+
+	typedef struct s_variablenlist
         {
                 char variable[20];
                 struct s_variablenlist *davor;
@@ -15,7 +23,7 @@ void yyerror(char *message);
 
 	typedef struct s_termlist
         {
-                char term[10];
+                char term[20];
                 struct s_variablenlist *varlist;
 				struct s_variablenlist *firstvarlist;
                 struct s_termlist *davor;
@@ -41,8 +49,10 @@ void yyerror(char *message);
 	int copies[50];
 	int nextUpdate;
 	int termCount;
-	char iresult[100];
-	char gresult[100];
+	char iresult[100]="";
+	char gresult[100]="";
+	bool gresultbool;
+	bool iresultbool;
 
 void addVariable(char* vari) {
 	strcpy(momtermlist->varlist->variable,vari);
@@ -95,6 +105,174 @@ void ausgabeAnalyse(){
 	}
 }
 
+void testen(int counter){
+	bool re = false;	
+	char string[100];
+	termlist *aktuellmomterm;
+	termlist *savemomterm;
+	variablenlist *firstvarlist;
+	testlist *vartestlist = (testlist*)malloc(sizeof(testlist));
+	testlist *firstvartestlist;
+	testlist *vardummy = (testlist*)malloc(sizeof(testlist));;
+	termlist *termdummy;
+	bool itest=true;
+	bool gtest=true;
+	iresultbool=false;
+	gresultbool=false;
+	int i;
+	vartestlist->davor=0;
+	vartestlist->danach=0;
+	
+	strcpy(iresult,"");
+	strcpy(gresult,"");
+
+	aktuellmomterm = momtermlist;
+	firstvarlist=momtermlist->varlist;
+	savemomterm=firstmomterm;
+
+
+	for (i=1;i<=counter;i++) {
+		savemomterm=savemomterm->danach;
+	}
+
+	firstvartestlist = vartestlist;
+
+	//Lade erste Variablenliste ein
+	while (savemomterm->varlist->danach!=0){
+		strcpy(vartestlist->variable,savemomterm->varlist->variable);
+		vartestlist->danach= (testlist*)malloc(sizeof(testlist));
+		vartestlist->danach->davor = vartestlist;
+		vartestlist = vartestlist->danach;
+		vartestlist->danach=0;
+		savemomterm->varlist=savemomterm->varlist->danach;
+	}
+	savemomterm->varlist=firstvarlist;
+	vardummy = firstvartestlist;
+	termdummy = firstmomterm;
+	//gehe zweite Variablenliste durch und vergleiche diese mit der ersten
+	while (aktuellmomterm->varlist->danach!=0 &&gtest==true){
+		vardummy = firstvartestlist;
+		//Vergleiche direkt mit bisher gespeicherten Variablen und füge ggf. zu I oder G Test hinzu
+		while(vardummy->danach!=0){
+			printf(" Vergleich:%s=%s\n ", aktuellmomterm->varlist->variable, vardummy->variable);
+					
+			if(strcmp(aktuellmomterm->varlist->variable,vardummy->variable) == 0)
+			{
+				termdummy = firstmomterm;
+				termdummy->varlist = firstmomterm->firstvarlist;
+				while(termdummy->varlist->danach!=0)
+				{
+					//Für G Test
+					if(strcmp(termdummy->varlist->variable,vardummy->variable) == 0){
+						printf("G done\n");						
+						sprintf(string,"%s %s",gresult,vardummy->variable);
+						strcpy(gresult,string);
+
+						//lösche doppelte variable aus liste
+						if(vardummy->davor==0)
+						{						
+							vardummy->danach->davor=0;
+							firstvartestlist=vardummy->danach;
+						}else if(vardummy->danach==0)
+						{
+							vardummy->davor->danach=0;
+						}else{
+							vardummy->davor->danach=vardummy->danach;
+							vardummy->danach->davor=vardummy->davor;
+						}
+						
+						if(aktuellmomterm->varlist->davor==0)
+						{										
+							firstvarlist=aktuellmomterm->varlist->danach;
+							aktuellmomterm->firstvarlist=aktuellmomterm->varlist->danach;				
+							aktuellmomterm->varlist->danach->davor=0;
+							aktuellmomterm->varlist=aktuellmomterm->varlist->danach;
+						}else if(aktuellmomterm->varlist->danach==0)
+						{
+							aktuellmomterm->varlist->davor->danach=0;
+							aktuellmomterm->varlist=aktuellmomterm->varlist->davor;
+							aktuellmomterm->firstvarlist=aktuellmomterm->varlist->davor;
+						}else{
+							aktuellmomterm->varlist->davor->danach=aktuellmomterm->varlist->danach;
+							aktuellmomterm->varlist->danach->davor=aktuellmomterm->varlist->davor;
+							aktuellmomterm->firstvarlist=aktuellmomterm->varlist->davor;
+						}
+						
+						gtest=false;
+						gresultbool=true;
+					}
+					//Schleife einen weiter
+					termdummy->varlist=termdummy->varlist->danach;
+				}//while
+			}//if	
+			//Schleife einen weiter
+			vardummy=vardummy->danach;		
+		}//while vardummy	
+		aktuellmomterm->varlist=aktuellmomterm->varlist->danach;
+		vardummy=firstvartestlist;	
+	}//while
+
+
+	
+/*	while(aktuellmomterm->varlist->danach!=0)
+	{
+		printf("Liste: %s\n",aktuellmomterm->varlist->variable);
+		aktuellmomterm->varlist=aktuellmomterm->varlist->danach;
+	} */
+
+	//Listen an die richtige Position bewegen
+	while(aktuellmomterm->varlist->davor!=0){
+		aktuellmomterm->varlist=aktuellmomterm->varlist->davor;
+	}
+
+	while(vardummy->davor!=0){
+		vardummy=vardummy->davor;
+	}
+
+	//ausgabe / i test
+	while(vardummy->danach!=0){
+		termdummy = firstmomterm;		
+		termdummy->varlist = firstmomterm->firstvarlist;	
+		while(termdummy->varlist->danach!=0)
+		{					//Für I Test
+			printf("(I-Vergleich: %s-%s \n", vardummy->variable, termdummy->varlist->variable);
+									
+			if(strcmp(termdummy->varlist->variable,vardummy->variable) == 0){
+				printf("I Done\n");
+				sprintf(string,"%s %s",iresult,vardummy->variable);
+				iresultbool=true;
+				strcpy(iresult,string);
+			}
+			termdummy->varlist=termdummy->varlist->danach;
+		}
+		vardummy=vardummy->danach;
+	}	
+
+	while(aktuellmomterm->varlist->danach!=0){
+		termdummy = firstmomterm;		
+		termdummy->varlist = firstmomterm->firstvarlist;	
+		while(termdummy->varlist->danach!=0)
+		{					//Für I Test
+			printf("(I-Vergleich: %s-%s \n", aktuellmomterm->varlist->variable, termdummy->varlist->variable);
+									
+			if(strcmp(termdummy->varlist->variable,aktuellmomterm->varlist->variable) == 0){
+				printf("I Done\n");
+				sprintf(string,"%s %s",iresult,aktuellmomterm->varlist->variable);
+				iresultbool=true;
+				strcpy(iresult,string);
+			}
+			termdummy->varlist=termdummy->varlist->danach;
+		}
+		aktuellmomterm->varlist=aktuellmomterm->varlist->danach;
+	}	
+
+
+	aktuellmomterm = momtermlist;
+	aktuellmomterm->varlist=firstvarlist;
+	savemomterm=firstmomterm;
+	vardummy=firstvartestlist;
+}
+
 
 bool gTest(int counter) {
 	bool re = false;	
@@ -102,15 +280,147 @@ bool gTest(int counter) {
 	termlist *aktuellmomterm;
 	termlist *savemomterm;
 	variablenlist *firstvarlist;
+	testlist *vartestlist = (testlist*)malloc(sizeof(testlist));
+	testlist *firstvartestlist;
+	testlist *vardummy = (testlist*)malloc(sizeof(testlist));;
+	termlist *termdummy;
+	bool itest=true;
+	iresultbool=false;
+	gresultbool=false;
+	int i;
+	vartestlist->davor=0;
+	vartestlist->danach=0;
+	
+	strcpy(iresult,"");
+	strcpy(gresult,"");
 
 	aktuellmomterm = momtermlist;
 	firstvarlist=momtermlist->varlist;
 	savemomterm=firstmomterm;
 
-	for (int i=1;i<=counter;i++) {
+
+	for (i=1;i<=counter;i++) {
+		//printf("Savemomtermplus");		
 		savemomterm=savemomterm->danach;
+		//printf("  savemomterm var:  %s  ",savemomterm->varlist->variable);
 	}
+
+	firstvartestlist = vartestlist;
+
 	
+	//Lade erste Variablenliste ein
+	while (savemomterm->varlist->danach!=0){
+		//printf("Laden der vartestlist");
+		strcpy(vartestlist->variable,savemomterm->varlist->variable);
+		vartestlist->danach= (testlist*)malloc(sizeof(testlist));
+		vartestlist->danach->davor = vartestlist;
+		vartestlist = vartestlist->danach;
+		vartestlist->danach=0;
+		savemomterm->varlist=savemomterm->varlist->danach;
+	}
+	savemomterm->varlist=firstvarlist;
+	vardummy = firstvartestlist;
+	termdummy = firstmomterm;
+	//gehe zweite Variablenliste durch und vergleiche diese mit der ersten
+	while (aktuellmomterm->varlist->danach!=0){
+		vardummy = firstvartestlist;
+//		printf("Firstvarlist: %s",firstvartestlist->variable);
+		//Vergleiche direkt mit bisher gespeicherten Variablen und füge ggf. zu I oder G Test hinzu
+		while(vardummy->danach!=0){
+			printf(" Vergleich:%s=%s\n ", aktuellmomterm->varlist->variable, vardummy->variable);
+					
+			if(strcmp(aktuellmomterm->varlist->variable,vardummy->variable) == 0)
+			{
+				termdummy = firstmomterm;
+				termdummy->varlist = firstmomterm->firstvarlist;
+//				printf("Variable %s",termdummy->varlist->variable);
+				while(termdummy->varlist->danach!=0)
+				{
+					//Für G Test
+					//printf("Compare %s %s", termdummy->varlist->variable, vardummy->variable);
+					if(strcmp(termdummy->varlist->variable,vardummy->variable) == 0){
+						printf("G done\n");						
+						sprintf(string,"%s %s",gresult,vardummy->variable);
+						strcpy(gresult,string);
+
+						//lösche doppelte variable aus liste
+						if(vardummy->davor==0)
+						{						
+							vardummy->danach->davor=0;
+						}else if(vardummy->danach==0)
+						{
+							vardummy->davor->danach=0;
+						}else{
+							vardummy->davor->danach=vardummy->danach;
+							vardummy->danach->davor=vardummy->davor;
+						}
+
+						gresultbool=true;
+						itest=false;
+					}
+					//Schleife einen weiter
+					termdummy->varlist=termdummy->varlist->danach;
+				}
+			}	
+			//Schleife einen weiter
+			vardummy=vardummy->danach;		
+		}
+		if(vardummy->danach == 0 && itest == true)
+		{	
+			termdummy = firstmomterm;		
+			termdummy->varlist = firstmomterm->firstvarlist;	
+			vardummy=vardummy->davor;
+				//if(strcmp(aktuellmomterm->varlist->variable,vardummy->variable) == 0)
+				//{
+					while(termdummy->varlist->danach!=0)
+					{					//Für I Test
+						printf("(I-Vergleich: %s-%s \n", aktuellmomterm->varlist->variable, termdummy->varlist->variable);
+									
+						if(strcmp(termdummy->varlist->variable,aktuellmomterm->varlist->variable) == 0){
+							printf("I Done\n");
+							sprintf(string,"%s %s",iresult,aktuellmomterm->varlist->variable);
+							iresultbool=true;
+							strcpy(iresult,string);
+						}
+						termdummy->varlist=termdummy->varlist->danach;
+					}
+				//}
+
+		}
+		//i test für restliche liste
+		if(itest==true)
+		{
+			while(vardummy!=0)
+			{
+				termdummy = firstmomterm;		
+				termdummy->varlist = firstmomterm->firstvarlist;	
+				
+				while(termdummy->varlist->danach!=0)
+					{					//Für I Test
+						printf("(I-Vergleich: %s-%s \n", vardummy->variable, termdummy->varlist->variable);
+									
+						if(strcmp(termdummy->varlist->variable,vardummy->variable) == 0){
+							printf("I Done\n");
+							sprintf(string,"%s %s",iresult,vardummy->variable);
+							iresultbool=true;
+							strcpy(iresult,string);
+						}
+						termdummy->varlist=termdummy->varlist->danach;
+					}
+				vardummy=vardummy->davor;
+			}
+		}	
+			
+			
+		itest=true;
+		aktuellmomterm->varlist=aktuellmomterm->varlist->danach;
+		vardummy=firstvartestlist;	
+	}
+	aktuellmomterm = momtermlist;
+	aktuellmomterm->varlist=firstvarlist;
+	savemomterm=firstmomterm;
+	vardummy=firstvartestlist;
+/*
 	while (savemomterm->varlist->danach!=0){
 		while (aktuellmomterm->varlist->danach!=0){	
 			printf("VAR: %s:%s\n",aktuellmomterm->varlist->variable,savemomterm->varlist->variable);		
@@ -132,6 +442,8 @@ bool gTest(int counter) {
 		aktuellmomterm->varlist=firstvarlist;
 		savemomterm->varlist=savemomterm->varlist->danach;
 	}
+
+*/
 	return re;
 }
 
@@ -185,6 +497,7 @@ void updateOutputOfID(int id,int eingang) {
 void analyseTerm() {
 	char string[50];
 	int i=1;
+	int j=1;
 	sprintf(string,"(%i,1)",counter+1);
 	setGraphVal("U",counter);
 	setGraphIO(momtermlist->term,string);
@@ -210,11 +523,15 @@ void analyseTerm() {
 	} else {
 		// for schleife für ground test, von i=1 bis (<=) termCount
 		//ausgabeAnalyse();
+//		printf("Zahler: %i %i",i,termCount);
 		for (i=1;i<=termCount;i++) {
-			if (gTest(i)==true) {
-				ausgabeAnalyse();
+			printf("Zahler: %i %i", i, termCount);
+			testen(i);
+			printf("  Result: %d %d  ", gresultbool, iresultbool);
+			if (gresultbool==true) {
+				//ausgabeAnalyse();
 				//mach fancy shit
-				if(iTest()==true){
+				if(iresultbool==true){
 					//beide Tests true
 					nextGraph();
 					setGraphVal("G",counter);
@@ -240,7 +557,7 @@ void analyseTerm() {
 					setGraphIO("-",string);
 				}
 			}else{
-				if(iTest()==true){
+				if(iresultbool==true){
 					//nur i true
 					nextGraph();
 					setGraphVal("I",counter);
@@ -253,7 +570,7 @@ void analyseTerm() {
 				}else{
 					//keins true
 				}
-			}			
+			}//for schleife			
 		}
 		//Testsende
 		nextGraph();

@@ -1,0 +1,76 @@
+%{
+#include <stdio.h>
+#include <string.h>
+#include <math.h>
+void yyerror(char *message);
+
+typedef struct s_termlist
+        {
+                char term[10];
+                struct s_variablenlist *varlist;
+                struct s_termlist *davor;
+                struct s_termlist *danach;
+        }termlist;
+
+        termlist *momtermlist;
+
+        typedef struct s_variablenlist
+        {
+                char variable[20];
+                struct s_variablenlist *davor;
+                struct s_variablenlist *danach;
+        }variablenlist;
+
+%}
+
+%start S
+
+%union{
+char character[100];
+}
+
+%token aus
+%token bindestrich doppelpunkt gleich groesser kleiner groessergleich
+%token klammerauf klammerzu eklammerauf eklammerzu
+%token komma punkt oder 
+%token leereliste variable term pipeliste kommaliste parameter
+
+%type <character> term;
+%type <character> variable;
+%type <character> pipeliste;
+%type <character> kommaliste;
+%type <character> leereliste;
+
+%%
+S:  aus {
+ printf("erkannt");
+}
+| Z 
+| S Z | S aus {printf("erkannt");}
+
+Z: term klammerauf A klammerzu C {
+printf(;
+momtermlist = (termlist*)malloc(sizeof(termlist));
+strcpy(momtermlist->term,$1);
+printf("Hallo: %s",momtermlist->term);
+}
+   
+A: leereliste B | pipeliste B | variable B 
+B: komma A | 
+C: punkt aus | doppelpunkt bindestrich D aus
+D: G | variable E
+E: kleiner variable F | groessergleich variable F
+F: komma Z 
+G: term klammerauf A klammerzu H
+H: punkt aus | komma G  
+
+%%
+
+int main(int argc, char **argv){
+	yyparse();
+	return 0;
+}
+
+void yyerror(char *message){
+	printf("Good bye \n %s", message);
+}
