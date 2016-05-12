@@ -42,6 +42,8 @@ void yyerror(char *message);
 
         termlist *momtermlist;
 		termlist *firstmomterm;
+
+		termlist *erstesElement;
 		graphlist *momgraphlist;
 		graphlist *firstgraphlist;
 		testlist *itestlist;
@@ -115,7 +117,23 @@ void ausgabeAnalyse(){
 	}
 }
 
-void testen(int counter){
+void ausgabeTermlist(){
+	termlist *dummy=firstmomterm;
+	while(dummy->danach!=0)
+	{
+		printf("Term %s",dummy->term);
+		while(dummy->varlist->danach!=0)
+		{
+			printf("Var %s",dummy->varlist->variable);
+			dummy->varlist=dummy->varlist->danach;
+		}
+		printf("\n");
+		dummy=dummy->danach;
+	}
+}
+
+void testen(int c){
+	int counter = c;
 	bool re = false;	
 	char string[100];
 	termlist *aktuellmomterm;
@@ -130,7 +148,7 @@ void testen(int counter){
 	bool gtest=true;
 	iresultbool=false;
 	gresultbool=false;
-	int k;
+	int k=1;
 	vartestlist->davor=0;
 	vartestlist->danach=0;
 	
@@ -139,30 +157,44 @@ void testen(int counter){
 	
 	aktuellmomterm = momtermlist;
 	firstvarlist=momtermlist->varlist;
-
-	firstmomterm->varlist=firstmomterm->firstvarlist;
-
 	savemomterm=firstmomterm;
-	
+
+
+//	ausgabeTermlist();
+
 	//Liste für alle Variablen für den i test
 	itestlist=(testlist*)malloc(sizeof(testlist));
 	itestlist->davor=0;
 	itestlist->danach=0;
 	firstitestliste= itestlist;
 	
-		
-
-	printf("First: %s %s      ", firstmomterm->varlist->variable, firstmomterm->danach->varlist->variable);
-	for (k=1;k<=counter;k++) {
+	//an den Anfang gehen
+	while(savemomterm->davor!=0)
+	{
+		savemomterm=savemomterm->davor;
+	}
+	
+	//richtige Position
+	while (k<=counter) {
 		savemomterm=savemomterm->danach;
 		printf("Counteri %i %i %s \n",k,counter,savemomterm->varlist->variable);
+		k++;
 	}
+	//firstvarlist=savemomterm->varlist;
+	printf("----- Position --- \n");
+	printf("%s %s\n",savemomterm->davor->varlist->variable, savemomterm->davor->varlist->danach->variable);
+
+	printf("Aktuelle Position %s %s \n\n", savemomterm->varlist->variable, savemomterm->varlist->danach->variable);
+
+	printf("%s %s\n",savemomterm->danach->varlist->variable, savemomterm->danach->varlist->danach->variable);
+
+	
 
 	firstvartestlist = vartestlist;
 	//Lade erste Variablenliste ein
 	while (savemomterm->varlist->danach!=0){
 		addITest(savemomterm->varlist->variable);		
-		printf("Var eingelesen: %s",savemomterm->varlist->variable);
+		printf("Var eingelesen: %s\n",savemomterm->varlist->variable);
 		strcpy(vartestlist->variable,savemomterm->varlist->variable);
 		vartestlist->danach= (testlist*)malloc(sizeof(testlist));
 		vartestlist->danach->davor = vartestlist;
@@ -179,10 +211,12 @@ void testen(int counter){
 		aktuellmomterm->varlist=aktuellmomterm->varlist->danach;
 	}
 
+	//Listen an die richtige Stelle setzen
 	aktuellmomterm->varlist=aktuellvarlist;
 	savemomterm->varlist=firstvarlist;
 	vardummy = firstvartestlist;
 	termdummy = firstmomterm;
+
 	//gehe zweite Variablenliste durch und vergleiche diese mit der ersten
 	while (aktuellmomterm->varlist->danach!=0 && gtest==true){
 		vardummy = firstvartestlist;
@@ -341,12 +375,12 @@ void testen(int counter){
 
 	aktuellmomterm = momtermlist;
 	aktuellmomterm->varlist=firstvarlist;
-	savemomterm=firstmomterm;
+	//savemomterm=firstmomterm;
 	vardummy=firstvartestlist;
 	gtest=true;
 }
 
-
+/*
 bool gTest(int counter) {
 	bool re = false;	
 	char string[100];
@@ -516,10 +550,10 @@ bool gTest(int counter) {
 		savemomterm->varlist=savemomterm->varlist->danach;
 	}
 
-*/
-	return re;
-}
 
+	return re;
+}*/
+/*
 bool iTest() {
 	bool re=false;
 	char string[100];
@@ -553,6 +587,8 @@ bool iTest() {
 	
 	return re;
 }
+*/
+
 
 void updateOutputOfID(int id,int eingang) {
 	graphlist *dummy;
@@ -598,7 +634,7 @@ void analyseTerm() {
 		//ausgabeAnalyse();
 //		printf("Zahler: %i %i",i,termCount);
 		for (i=1;i<=termCount;i++) {
-			printf("Zahler: %i %i", i, termCount);
+			printf(" \n Aufruf mit %d \n ",i);
 			testen(i);
 			printf("  Result: %d %d  ", gresultbool, iresultbool);
 			if (gresultbool==true) {
@@ -651,10 +687,13 @@ void analyseTerm() {
 		sprintf(string,"(%i,1)",counter+1);
 		setGraphIO("-",string);
 		nextGraph();
+		//am Ende des letzten Terms/baums darf kein C erscheinen
+		if(momtermlist->danach!=0){
 		setGraphVal("C",counter);
 		sprintf(string,"(%i,1)",counter+1);
 		setGraphIO("-",string);
 		nextGraph();
+		}
 		setGraphVal("U",counter);
 		setGraphIO("-","");
 		updateOutputOfID(nextUpdate,2);
@@ -680,6 +719,7 @@ void analyse() {
 		termCount=-1;
 		while (momtermlist->danach!=0) {
 			momtermlist=momtermlist->danach;
+			//printf("\n --- While außen: %s %s \n",momtermlist->davor->varlist->variable, momtermlist->davor->varlist->danach->variable);
 			termCount++;
 			nextGraph();
 			analyseTerm();
@@ -806,6 +846,7 @@ H: punkt aus { ausgabe();}
 int main(int argc, char **argv){
 	momtermlist = (termlist*)malloc(sizeof(termlist));
 	firstmomterm =momtermlist;
+	erstesElement = momtermlist;
 	momtermlist->davor = 0;
 	momtermlist->danach = 0;
 	momtermlist->varlist = (variablenlist*)malloc(sizeof(variablenlist));
