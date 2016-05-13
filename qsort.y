@@ -53,6 +53,10 @@ void yyerror(char *message);
 	int copies[50];
 	int nextUpdate;
 	int termCount;
+	//array for all cs
+	int ccounter=1;
+	int cpositions[100];
+	int cpositionscurrentvalue[100];
 	char iresult[100]="";
 	char gresult[100]="";
 	bool gresultbool;
@@ -183,12 +187,12 @@ void testen(int c){
 	//firstvarlist=savemomterm->varlist;
 
 	//firstvarlist=savemomterm->varlist;
-	printf("----- Position --- \n");
-	printf("%s %s\n",savemomterm->davor->varlist->variable, savemomterm->davor->varlist->danach->variable);
+//	printf("----- Position --- \n");
+//	printf("%s %s\n",savemomterm->davor->varlist->variable, savemomterm->davor->varlist->danach->variable);
 
-	printf("Aktuelle Position %s %s \n\n", savemomterm->varlist->variable, savemomterm->varlist->danach->variable);
+//	printf("Aktuelle Position %s %s \n\n", savemomterm->varlist->variable, savemomterm->varlist->danach->variable);
 
-	printf("%s %s\n",savemomterm->danach->varlist->variable, savemomterm->danach->varlist->danach->variable);
+//	printf("%s %s\n",savemomterm->danach->varlist->variable, savemomterm->danach->varlist->danach->variable);
 
 	
 
@@ -221,12 +225,12 @@ void testen(int c){
 	}
 //	savemomterm->varlist=savemomterm->varlist->davor;
 //	savemomterm->varlist=firstvarlist;
-	printf("----- Position222 --- \n");
-	printf("%s %s\n",savemomterm->davor->varlist->variable, savemomterm->davor->varlist->danach->variable);
+//	printf("----- Position222 --- \n");
+//	printf("%s %s\n",savemomterm->davor->varlist->variable, savemomterm->davor->varlist->danach->variable);
 
-	printf("Aktuelle Position %s %s \n\n", savemomterm->varlist->variable, savemomterm->varlist->danach->variable);
+//	printf("Aktuelle Position %s %s \n\n", savemomterm->varlist->variable, savemomterm->varlist->danach->variable);
 
-	printf("%s %s\n",savemomterm->danach->varlist->variable, savemomterm->danach->varlist->danach->variable);
+//	printf("%s %s\n",savemomterm->danach->varlist->variable, savemomterm->danach->varlist->danach->variable);
 	vardummy = firstvartestlist;
 	termdummy = firstmomterm;
 
@@ -235,7 +239,7 @@ void testen(int c){
 		vardummy = firstvartestlist;
 		//Vergleiche direkt mit bisher gespeicherten Variablen und füge ggf. zu I oder G Test hinzu
 		while(vardummy->danach!=0){
-			printf(" Vergleich:%s=%s\n ", aktuellmomterm->varlist->variable, vardummy->variable);
+//			printf(" Vergleich:%s=%s\n ", aktuellmomterm->varlist->variable, vardummy->variable);
 					
 			if(strcmp(aktuellmomterm->varlist->variable,vardummy->variable) == 0)
 			{
@@ -245,7 +249,7 @@ void testen(int c){
 				{
 					//Für G Test
 					if(strcmp(termdummy->varlist->variable,vardummy->variable) == 0){
-						printf("G done\n");						
+//						printf("G done\n");						
 						sprintf(string,"%s %s",gresult,vardummy->variable);
 						strcpy(gresult,string);
 
@@ -291,10 +295,10 @@ void testen(int c){
 		termdummy->varlist = firstmomterm->firstvarlist;	
 		while(termdummy->varlist->danach!=0)
 		{					//Für I Test
-			printf("(I-Vergleich: %s-%s \n", itestlist->variable, termdummy->varlist->variable);
+//			printf("(I-Vergleich: %s-%s \n", itestlist->variable, termdummy->varlist->variable);
 									
 			if(strcmp(termdummy->varlist->variable,itestlist->variable) == 0){
-				printf("I Done\n");
+//				printf("I Done\n");
 				sprintf(string,"%s %s",iresult,itestlist->variable);
 				iresultbool=true;
 				strcpy(iresult,string);
@@ -540,8 +544,9 @@ void analyseTerm() {
 	int j=1;
 	sprintf(string,"(%i,1)",counter+1);
 	setGraphVal("U",counter);
+	updateOutputOfID(cpositions[1], 1);
+	cpositionscurrentvalue[1]++;
 	setGraphIO(momtermlist->term,string);
-	//ausgabeAnalyse();
 	//Testen ob 2. Element
 	if (momtermlist->davor->davor==0) {
 		nextGraph();
@@ -550,12 +555,15 @@ void analyseTerm() {
 		setGraphIO("-",string);
 		nextGraph();
 		setGraphVal("C",counter);
+		cpositions[ccounter]=counter;
+		ccounter++;
 		sprintf(string,"(%i,1)",counter+1);
-		setGraphIO("-",string);
+		setGraphIO("",string);
 		//Save in array
 		nextGraph();
 		setGraphVal("U",counter);
-		setGraphIO("-","-");
+		//updateOutputOfID(cpositions[2],1);
+		setGraphIO("-","");
 		updateOutputOfID(nextUpdate,2);
 		nextUpdate=counter;
 		//Update E
@@ -585,6 +593,7 @@ void analyseTerm() {
 					setGraphVal("U",counter);
 					sprintf(string,"(%i,1)",counter+1);
 					setGraphIO("-",string);
+					updateOutputOfID(cpositions[i+1],1);
 				}else{
 					//nur G true
 					nextGraph();
@@ -595,6 +604,7 @@ void analyseTerm() {
 					setGraphVal("U",counter);
 					sprintf(string,"(%i,1)",counter+1);
 					setGraphIO("-",string);
+					updateOutputOfID(cpositions[i+1],1);
 				}
 			}else{
 				if(iresultbool==true){
@@ -607,6 +617,7 @@ void analyseTerm() {
 					setGraphVal("U",counter);
 					sprintf(string,"(%i,1)",counter+1);
 					setGraphIO("-",string);
+					updateOutputOfID(cpositions[i+1],1);
 				}else{
 					//keins true
 				}
@@ -621,20 +632,25 @@ void analyseTerm() {
 		//am Ende des letzten Terms/baums darf kein C erscheinen
 		if(momtermlist->danach!=0){
 		setGraphVal("C",counter);
+		cpositions[ccounter]=counter;
+		cpositionscurrentvalue[ccounter]=1;
+		ccounter++;
 		sprintf(string,"(%i,1)",counter+1);
-		setGraphIO("-",string);
+		setGraphIO("",string);
 		nextGraph();
 		}
 		setGraphVal("U",counter);
 		setGraphIO("-","");
 		updateOutputOfID(nextUpdate,2);
 		//Update E TODO
+
 		nextUpdate=counter;
 	}
 }
 
 
 void analyse() {
+	char string[100];
 	if (momtermlist->danach==0) {
 		setGraphVal("E",counter);
 		setGraphIO("-","(2,1)");
@@ -647,6 +663,8 @@ void analyse() {
 		nextUpdate=counter;
 		nextGraph();
 		setGraphVal("C",counter);
+		cpositions[ccounter]=counter;
+		ccounter++;
 		termCount=-1;
 		while (momtermlist->danach!=0) {
 			momtermlist=momtermlist->danach;
@@ -655,6 +673,12 @@ void analyse() {
 			nextGraph();
 			analyseTerm();
 		}
+		//Insert Value of the last U
+		sprintf(string,"(%i,1)",counter+1);
+		setGraphIO("",string);
+		nextGraph();
+		setGraphVal("R",counter);
+		setGraphIO("-","-");
 	}
 	//Ausgabe hier
 	ausgabeAnalyse();
