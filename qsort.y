@@ -157,7 +157,7 @@ void testen(int c){
 	
 	aktuellmomterm = momtermlist;
 	firstvarlist=momtermlist->varlist;
-	savemomterm=firstmomterm;
+	savemomterm=momtermlist;
 
 
 //	ausgabeTermlist();
@@ -180,6 +180,8 @@ void testen(int c){
 		printf("Counteri %i %i %s \n",k,counter,savemomterm->varlist->variable);
 		k++;
 	}
+	//firstvarlist=savemomterm->varlist;
+
 	//firstvarlist=savemomterm->varlist;
 	printf("----- Position --- \n");
 	printf("%s %s\n",savemomterm->davor->varlist->variable, savemomterm->davor->varlist->danach->variable);
@@ -213,7 +215,18 @@ void testen(int c){
 
 	//Listen an die richtige Stelle setzen
 	aktuellmomterm->varlist=aktuellvarlist;
-	savemomterm->varlist=firstvarlist;
+	
+	while(savemomterm->varlist->davor!=0){
+		savemomterm->varlist=savemomterm->varlist->davor;
+	}
+//	savemomterm->varlist=savemomterm->varlist->davor;
+//	savemomterm->varlist=firstvarlist;
+	printf("----- Position222 --- \n");
+	printf("%s %s\n",savemomterm->davor->varlist->variable, savemomterm->davor->varlist->danach->variable);
+
+	printf("Aktuelle Position %s %s \n\n", savemomterm->varlist->variable, savemomterm->varlist->danach->variable);
+
+	printf("%s %s\n",savemomterm->danach->varlist->variable, savemomterm->danach->varlist->danach->variable);
 	vardummy = firstvartestlist;
 	termdummy = firstmomterm;
 
@@ -256,35 +269,6 @@ void testen(int c){
 							}
 							itestlist=itestlist->danach;
 						}
-						//lösche doppelte variable aus liste
-						/*if(vardummy->davor==0)
-						{						
-							vardummy->danach->davor=0;
-							firstvartestlist=vardummy->danach;
-						}else if(vardummy->danach==0)
-						{
-							vardummy->davor->danach=0;
-						}else{
-							vardummy->davor->danach=vardummy->danach;
-							vardummy->danach->davor=vardummy->davor;
-						}
-						
-						if(aktuellmomterm->varlist->davor==0)
-						{										
-							firstvarlist=aktuellmomterm->varlist->danach;
-							aktuellmomterm->firstvarlist=aktuellmomterm->varlist->danach;				
-							aktuellmomterm->varlist->danach->davor=0;
-							aktuellmomterm->varlist=aktuellmomterm->varlist->danach;
-						}else if(aktuellmomterm->varlist->danach==0)
-						{
-							aktuellmomterm->varlist->davor->danach=0;
-							aktuellmomterm->varlist=aktuellmomterm->varlist->davor;
-							aktuellmomterm->firstvarlist=aktuellmomterm->varlist->davor;
-						}else{
-							aktuellmomterm->varlist->davor->danach=aktuellmomterm->varlist->danach;
-							aktuellmomterm->varlist->danach->davor=aktuellmomterm->varlist->davor;
-							aktuellmomterm->firstvarlist=aktuellmomterm->varlist->davor;
-						}*/
 						
 						gtest=false;
 						gresultbool=true;
@@ -292,7 +276,6 @@ void testen(int c){
 					//Schleife einen weiter
 					termdummy->varlist=termdummy->varlist->danach;
 				}//while
-				//add i Test variable
 			}//if	
 			//Schleife einen weiter
 			vardummy=vardummy->danach;		
@@ -302,58 +285,6 @@ void testen(int c){
 	}//while
 
 
-	
-/*	while(aktuellmomterm->varlist->danach!=0)
-	{
-		printf("Liste: %s\n",aktuellmomterm->varlist->variable);
-		aktuellmomterm->varlist=aktuellmomterm->varlist->danach;
-	} */
-
-	//Listen an die richtige Position bewegen
-	/*while(aktuellmomterm->varlist->davor!=0){
-		aktuellmomterm->varlist=aktuellmomterm->varlist->davor;
-	}
-
-	while(vardummy->davor!=0){
-		vardummy=vardummy->davor;
-	}*/
-
-	//ausgabe / i test
-	/*while(vardummy->danach!=0){
-		termdummy = firstmomterm;		
-		termdummy->varlist = firstmomterm->firstvarlist;	
-		while(termdummy->varlist->danach!=0)
-		{					//Für I Test
-			printf("(I-Vergleich: %s-%s \n", vardummy->variable, termdummy->varlist->variable);
-									
-			if(strcmp(termdummy->varlist->variable,vardummy->variable) == 0){
-				printf("I Done\n");
-				sprintf(string,"%s %s",iresult,vardummy->variable);
-				iresultbool=true;
-				strcpy(iresult,string);
-			}
-			termdummy->varlist=termdummy->varlist->danach;
-		}
-		vardummy=vardummy->danach;
-	}	
-
-	while(aktuellmomterm->varlist->danach!=0){
-		termdummy = firstmomterm;		
-		termdummy->varlist = firstmomterm->firstvarlist;	
-		while(termdummy->varlist->danach!=0)
-		{					//Für I Test
-			printf("(I-Vergleich: %s-%s \n", aktuellmomterm->varlist->variable, termdummy->varlist->variable);
-									
-			if(strcmp(termdummy->varlist->variable,aktuellmomterm->varlist->variable) == 0){
-				printf("I Done\n");
-				sprintf(string,"%s %s",iresult,aktuellmomterm->varlist->variable);
-				iresultbool=true;
-				strcpy(iresult,string);
-			}
-			termdummy->varlist=termdummy->varlist->danach;
-		}
-		aktuellmomterm->varlist=aktuellmomterm->varlist->danach;
-	}*/	
 	itestlist=firstitestliste;
 	while(itestlist->danach!=0){
 		termdummy = firstmomterm;		
@@ -373,7 +304,7 @@ void testen(int c){
 		itestlist=itestlist->danach;
 	}
 
-	aktuellmomterm = momtermlist;
+	//aktuellmomterm = momtermlist;
 	aktuellmomterm->varlist=firstvarlist;
 	//savemomterm=firstmomterm;
 	vardummy=firstvartestlist;
