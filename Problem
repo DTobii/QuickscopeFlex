@@ -5,3 +5,6 @@ split([X|R],E,[X|K],G):-X<E,split(R,E,K,G).
 split([X|R],E,K,[X|G]):-X>=E,split(R,E,K,G).
 qsort([],[]).
 qsort([E|R],S):-split(R,E,K,G),qsort(K,SK),qsort(G,SG),conc(SK,[E|SG],S).
+
+p(X):-q(X),r(X),s(X).
+p(A,B,C,D):-q(A,B),r(A,C),s(B,D),l(C,D).
