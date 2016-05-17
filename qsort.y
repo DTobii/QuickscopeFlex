@@ -45,7 +45,7 @@ void ausgabeAnalyse() {
 
     dummy=firstgraphlist;
     while(dummy!=0) {
-        printf("%i %s %s %s\n", dummy->id, dummy->typ, dummy->ausgang, dummy->eingang);
+        printf("%2i %s %s %s\n", dummy->id, dummy->typ, dummy->ausgang, dummy->eingang);
         dummy=dummy->danach;
     }
 }
@@ -215,7 +215,11 @@ void updateOutputOfID(int id,int eingang) {
     while (dummy->id!=id) {
         dummy=dummy->danach;
     }
-    sprintf(string,"%s (%d,%d)",dummy->ausgang, counter, eingang);
+    if(strcmp(dummy->ausgang,"")==0){
+        sprintf(string,"(%2d,%d)", counter, eingang);
+    } else {
+        sprintf(string,"%s (%2d,%d)",dummy->ausgang, counter, eingang);
+    }
     strcpy(dummy->ausgang,string);
 }
 
@@ -223,7 +227,7 @@ void analyseTerm() {
     char string[50];
     int i=1;
     int j=1;
-    sprintf(string,"(%i,1)",counter+1);
+    sprintf(string,"(%2i,1)",counter+1);
     setGraphVal("U",counter);
     updateOutputOfID(cpositions[1], 1);
     setGraphIO(momtermlist->term,string);
@@ -231,13 +235,13 @@ void analyseTerm() {
     if (momtermlist->davor->davor==0) {
         nextGraph();
         setGraphVal("A",counter);
-        sprintf(string,"(%i,1)",counter+1);
+        sprintf(string,"(%2i,1)",counter+1);
         setGraphIO("-",string);
         nextGraph();
         setGraphVal("C",counter);
         cpositions[ccounter]=counter;
         ccounter++;
-        sprintf(string,"(%i,1)",counter+1);
+        sprintf(string,"(%2i,1)",counter+1);
         setGraphIO("",string);
         nextGraph();
         setGraphVal("U",counter);
@@ -257,26 +261,26 @@ void analyseTerm() {
                     //beide Tests true
                     nextGraph();
                     setGraphVal("G",counter);
-                    sprintf(string,"(%i,2) (%i,1)",counter+2,counter+1);
+                    sprintf(string,"(%2i,2) (%i,1)",counter+2,counter+1);
                     setGraphIO(gresult,string);
                     nextGraph();
                     setGraphVal("I",counter);
-                    sprintf(string,"(%i,2) (%i,1)", counter+1,counter+2);
+                    sprintf(string,"(%2i,2) (%i,1)", counter+1,counter+2);
                     setGraphIO(iresult,string);
                     nextGraph();
                     setGraphVal("U",counter);
-                    sprintf(string,"(%i,1)",counter+1);
+                    sprintf(string,"(%2i,1)",counter+1);
                     setGraphIO("-",string);
                     updateOutputOfID(cpositions[i+1],1);
                 } else {
                     //nur G true
                     nextGraph();
                     setGraphVal("G",counter);
-                    sprintf(string,"(%i,2) (%i,1)",counter+1,counter+2);
+                    sprintf(string,"(%2i,2) (%i,1)",counter+1,counter+2);
                     setGraphIO(gresult,string);
                     nextGraph();
                     setGraphVal("U",counter);
-                    sprintf(string,"(%i,1)",counter+1);
+                    sprintf(string,"(%2i,1)",counter+1);
                     setGraphIO("-",string);
                     updateOutputOfID(cpositions[i+1],1);
                 }
@@ -285,11 +289,11 @@ void analyseTerm() {
                     //nur i true
                     nextGraph();
                     setGraphVal("I",counter);
-                    sprintf(string,"(%i,2) (%i,1)", counter+2,counter+1);
+                    sprintf(string,"(%2i,2) (%i,1)", counter+2,counter+1);
                     setGraphIO(iresult,string);
                     nextGraph();
                     setGraphVal("U",counter);
-                    sprintf(string,"(%i,1)",counter+1);
+                    sprintf(string,"(%2i,1)",counter+1);
                     setGraphIO("-",string);
                     updateOutputOfID(cpositions[i+1],1);
                 } else {
@@ -300,7 +304,7 @@ void analyseTerm() {
         //Testsende
         nextGraph();
         setGraphVal("A",counter);
-        sprintf(string,"(%i,1)",counter+1);
+        sprintf(string,"(%2i,1)",counter+1);
         setGraphIO("-",string);
         nextGraph();
         //am Ende des letzten Terms/baums darf kein C erscheinen
@@ -308,7 +312,7 @@ void analyseTerm() {
             setGraphVal("C",counter);
             cpositions[ccounter]=counter;
             ccounter++;
-            sprintf(string,"(%i,1)",counter+1);
+            sprintf(string,"(%2i,1)",counter+1);
             setGraphIO("",string);
             nextGraph();
         }
@@ -325,13 +329,13 @@ void analyse() {
     char string[100];
     if (momtermlist->danach==0) {
         setGraphVal("E",counter);
-        setGraphIO("-","(2,1)");
+        setGraphIO("-","( 2,1)");
         nextGraph();
         setGraphVal("R",counter);
         setGraphIO("-","-");
     } else {
         setGraphVal("E",counter);
-        setGraphIO(momtermlist->term,"(2,1)");
+        setGraphIO(momtermlist->term,"( 2,1)");
         nextUpdate=counter;
         nextGraph();
         setGraphVal("C",counter);
@@ -345,7 +349,7 @@ void analyse() {
             analyseTerm();
         }
         //Insert Value of the last U
-        sprintf(string,"(%i,1)",counter+1);
+        sprintf(string,"(%2i,1)",counter+1);
         setGraphIO("",string);
         nextGraph();
         setGraphVal("R",counter);
