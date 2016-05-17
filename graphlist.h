@@ -16,6 +16,8 @@ typedef struct s_graphlist {
 graphlist *momgraphlist;
 graphlist *firstgraphlist;
 
+int counter;
+
 
 void nextGraph() {
     momgraphlist->danach = (graphlist*)malloc(sizeof(graphlist));
