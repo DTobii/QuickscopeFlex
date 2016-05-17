@@ -20,6 +20,7 @@ typedef struct s_termlist {
 
 termlist *momtermlist;
 termlist *firstmomterm;
+termlist *erstesElement;
 
 
 void addVariable(char* vari) {
