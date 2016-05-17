@@ -50,21 +50,7 @@ void ausgabeAnalyse() {
     }
 }
 
-void ausgabeTermlist() {
-    termlist *dummy=firstmomterm;
-    while(dummy->danach!=0) {
-        printf("Term %s",dummy->term);
-        while(dummy->varlist->danach!=0) {
-            printf("Var %s",dummy->varlist->variable);
-            dummy->varlist=dummy->varlist->danach;
-        }
-        printf("\n");
-        dummy=dummy->danach;
-    }
-}
-
-void testen(int c) {
-    int counter = c;
+void testen(int counter) {
     bool re = false;
     char string[100];
     termlist *aktuellmomterm;
@@ -75,8 +61,6 @@ void testen(int c) {
     testlist *firstvartestlist;
     testlist *vardummy = (testlist*)malloc(sizeof(testlist));;
     termlist *termdummy;
-    bool itest=true;
-    bool gtest=true;
     iresultbool=false;
     gresultbool=false;
     int k=1;
@@ -89,8 +73,6 @@ void testen(int c) {
     aktuellmomterm = momtermlist;
     firstvarlist=momtermlist->varlist;
     savemomterm=momtermlist;
-
-    //ausgabeTermlist();
 
     //Liste für alle Variablen für den i test
     itestlist=(testlist*)malloc(sizeof(testlist));
@@ -139,7 +121,7 @@ void testen(int c) {
     termdummy = firstmomterm;
 
     //gehe zweite Variablenliste durch und vergleiche diese mit der ersten
-    while (aktuellmomterm->varlist->danach!=0 && gtest==true) {
+    while (aktuellmomterm->varlist->danach!=0 && gresultbool==false) {
         vardummy = firstvartestlist;
         //Vergleiche direkt mit bisher gespeicherten Variablen und füge ggf. zu I oder G Test hinzu
         while(vardummy->danach!=0) {
@@ -170,7 +152,6 @@ void testen(int c) {
                             itestlist=itestlist->danach;
                         }
 
-                        gtest=false;
                         gresultbool=true;
                     }
                     //Schleife einen weiter
@@ -203,7 +184,6 @@ void testen(int c) {
 
     aktuellmomterm->varlist=firstvarlist;
     vardummy=firstvartestlist;
-    gtest=true;
 }
 
 void updateOutputOfID(int id,int eingang) {
@@ -231,7 +211,7 @@ void analyseTerm() {
     setGraphVal("U",counter);
     updateOutputOfID(cpositions[1], 1);
     setGraphIO(momtermlist->term,string);
-    //Testen ob 2. Element
+    //Testen ob 2. Element (Keine Tests benötigt)
     if (momtermlist->davor->davor==0) {
         nextGraph();
         setGraphVal("A",counter);
@@ -248,24 +228,21 @@ void analyseTerm() {
         setGraphIO("-","");
         updateOutputOfID(nextUpdate,2);
         nextUpdate=counter;
-        //Update E
-        //Testen ab 3. Element
+        //Testen ab 3. Element (Tests benötigt)
     } else {
         // for schleife für ground test, von i=1 bis (<=) termCount
-
         for (i=1; i<=termCount; i++) {
             testen(i);
             if (gresultbool==true) {
-                //mach fancy shit
                 if(iresultbool==true) {
                     //beide Tests true
                     nextGraph();
                     setGraphVal("G",counter);
-                    sprintf(string,"(%2i,2) (%i,1)",counter+2,counter+1);
+                    sprintf(string,"(%2i,2) (%2i,1)",counter+2,counter+1);
                     setGraphIO(gresult,string);
                     nextGraph();
                     setGraphVal("I",counter);
-                    sprintf(string,"(%2i,2) (%i,1)", counter+1,counter+2);
+                    sprintf(string,"(%2i,2) (%2i,1)", counter+1,counter+2);
                     setGraphIO(iresult,string);
                     nextGraph();
                     setGraphVal("U",counter);
@@ -276,7 +253,7 @@ void analyseTerm() {
                     //nur G true
                     nextGraph();
                     setGraphVal("G",counter);
-                    sprintf(string,"(%2i,2) (%i,1)",counter+1,counter+2);
+                    sprintf(string,"(%2i,2) (%2i,1)",counter+1,counter+2);
                     setGraphIO(gresult,string);
                     nextGraph();
                     setGraphVal("U",counter);
@@ -289,7 +266,7 @@ void analyseTerm() {
                     //nur i true
                     nextGraph();
                     setGraphVal("I",counter);
-                    sprintf(string,"(%2i,2) (%i,1)", counter+2,counter+1);
+                    sprintf(string,"(%2i,2) (%2i,1)", counter+2,counter+1);
                     setGraphIO(iresult,string);
                     nextGraph();
                     setGraphVal("U",counter);
@@ -319,7 +296,6 @@ void analyseTerm() {
         setGraphVal("U",counter);
         setGraphIO("-","");
         updateOutputOfID(nextUpdate,2);
-        //Update E TODO
         nextUpdate=counter;
     }
 }
@@ -327,12 +303,14 @@ void analyseTerm() {
 
 void analyse() {
     char string[100];
+    //Nur ein Term
     if (momtermlist->danach==0) {
         setGraphVal("E",counter);
         setGraphIO("-","( 2,1)");
         nextGraph();
         setGraphVal("R",counter);
         setGraphIO("-","-");
+    //Mehrere Terme
     } else {
         setGraphVal("E",counter);
         setGraphIO(momtermlist->term,"( 2,1)");
@@ -426,8 +404,7 @@ aus {
     printf("erkannt");
 }
 | Z
-| S Z | S aus {
-}
+| S Z | S aus 
 
 Z:
 term { setTerm($1);} klammerauf A klammerzu C
@@ -442,7 +419,7 @@ komma A |
 
 C:
 punkt aus { ausgabe();}
-| doppelpunkt bindestrich D aus { ausgabe();}
+| doppelpunkt bindestrich D
 
 D:
 G | variable {
